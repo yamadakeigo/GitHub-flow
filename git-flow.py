@@ -1,27 +1,40 @@
 import cv2
+import os
+import sys
 
-# ビデオキャプチャオブジェクトを作成
-cap = cv2.VideoCapture(0)
+# 同じディレクトリにあるface_recognition_module.pyをインポート
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from face_recognition_module import capture_frame
 
-if not cap.isOpened():
-    print("カメラを開くことができませんでした")
-    exit()
+# メイン関数を呼び出す
+if __name__ == "__main__":
+    cap = cv2.VideoCapture(0)
 
-while True:
-    # フレームをキャプチャ
-    ret, frame = cap.read()
+    if not cap.isOpened():
+        print("カメラを開くことができませんでした")
+        exit()
 
-    if not ret:
-        print("フレームを取得できませんでした")
-        break
+    while True:
+        # フレームをキャプチャ
+        ret, frame = cap.read()
 
-    # フレームを表示
-    cv2.imshow('Camera', frame)
+        if not ret:
+            print("フレームを取得できませんでした")
+            break
 
-    # 'q'キーが押されたらループを終了
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        # キー入力を取得
+        key = cv2.waitKey(1) & 0xFF
 
-# キャプチャを解放し、ウィンドウを閉じる
-cap.release()
-cv2.destroyAllWindows()
+        # フレームを処理
+        frame = capture_frame(frame, key)
+
+        # フレームを表示
+        cv2.imshow('Camera', frame)
+
+        # 'q'キーが押されたらループを終了
+        if key == ord('q'):
+            break
+
+    # リソースを解放
+    cap.release()
+    cv2.destroyAllWindows()
